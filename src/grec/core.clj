@@ -1,5 +1,4 @@
 (ns grec.core
-  (:gen-class :main true)
   (:require 
     [clojure.java.io :as io]
     [clojure.xml :as xml]
@@ -11,6 +10,7 @@
   (:import 
     [java.net URLEncoder]
     )
+  (:gen-class :main true)
   )
 
 (defn pad-regex [regex] (re-pattern (str "(.*)(" regex ")(.*)")))
@@ -37,12 +37,15 @@
 
 (defn -main [& args]
   (with-command-line args
-                     "Usage: grec --[color] [regex] [file]"
+                     "Usage: grec --[color] [regex] [URL]"
                      [ [red "colorize red"]
                       [green "colorize green"]
                       [blue "colorize blue"]
                       extras ]
                      (for [file extras] 
+                       (do
+                         (println red green blue extras)
                          (file-colorize file red green)
+                         )
                        )))
 

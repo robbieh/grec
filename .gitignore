@@ -1,4 +1,5 @@
 classes/
+.lein-deps-sum
 *.jar
 *.s??
 
