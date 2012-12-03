@@ -1,4 +1,5 @@
 (ns grec.core
+  (:gen-class :main true)
   (:require 
     [clojure.java.io :as io]
     [clojure.xml :as xml]
@@ -27,7 +28,6 @@
 
 (defn file-colorize
   [filename regex-red regex-green]
-  (println "colorizing: " filename)
   (with-open [rd (io/reader filename)]
     (doseq [line (line-seq rd)] 
       (println
