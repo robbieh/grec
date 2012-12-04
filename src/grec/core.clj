@@ -2,10 +2,11 @@
   (:require 
     [clojure.java.io :as io]
     [clojure.xml :as xml]
+    [colorize.core :as clojurecolor]
     )
   (:use 
-    [colorize.core]
-    [clojure.contrib.command-line]
+    [clojure.tools.cli :only (cli)]
+;    [clojure.contrib.command-line]
     )
   (:import 
     [java.net URLEncoder]
@@ -21,14 +22,14 @@
   (let [x  (re-seq (pad-regex regex) text)]
    (if (nil? x) text
            (let [a (add-color-by-regex ((first x) 1) regex colr)
-                 b (color (keyword colr) ((first x) 2))
+                 b (clojurecolor/color (keyword colr) ((first x) 2))
                  c (add-color-by-regex ((first x) 3) regex colr)
                  ]
                    (str (apply str a) (apply str b) (apply str c))))))
 
 (defn file-colorize
   [filename regex-red regex-green]
-  (with-open [rd (io/reader filename)]
+ (with-open [rd (io/reader filename)]
     (doseq [line (line-seq rd)] 
       (println
         (add-color-by-regex (add-color-by-regex line regex-green "green") regex-red "red")
@@ -36,16 +37,19 @@
 
 
 (defn -main [& args]
-  (with-command-line args
-                     "Usage: grec --[color] [regex] [URL]"
-                     [ [red "colorize red"]
-                      [green "colorize green"]
-                      [blue "colorize blue"]
-                      extras ]
-                     (for [file extras] 
-                       (do
-                         (println red green blue extras)
-                         (file-colorize file red green)
-                         )
-                       )))
+  (dorun (println "hey shouln't this show up?"))
+  (let [[opts args banner]
+        (cli args
+             ["-h" "--help" "Show usage" :flag true :default false]
+             ["-r" "--red" "color this red"]
+             ["-g" "--green" "color this green"])
+        {:keys [red green]} 
+        opts] 
+    (when (:help opts)
+      (println banner)
+      (System/exit 0))
+    (doseq [file args] (file-colorize file (opts :red) (opts :green)))
+))
+
+
 
